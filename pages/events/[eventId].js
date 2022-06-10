@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import EventContent from '../../components/event-detail/event-content';
 import EventLogistics from '../../components/event-detail/event-logistics';
 import EventSummary from '../../components/event-detail/event-summary';
@@ -15,6 +16,10 @@ export default function EventDetailPage({ event }) {
 
     return (
         <div>
+            <Head>
+                <title>{event.title}</title>
+                <meta name="description" content={event.description} />
+            </Head>
             <EventSummary title={event.title} />
             <EventLogistics
                 date={event.date}

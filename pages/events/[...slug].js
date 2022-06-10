@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
 import EventsList from '../../components/events/events-list';
@@ -43,6 +44,13 @@ export default function FilterEventPage({
 
     return (
         <>
+            <Head>
+                <title>Filtered Events</title>
+                <meta
+                    name="description"
+                    content={`All events for ${NewDate.toLocaleDateString()}`}
+                />
+            </Head>
             <ResultsTitle date={NewDate} />
             <EventsList events={events} />
         </>
