@@ -4,28 +4,16 @@ import EventsList from '../../components/events/events-list';
 import ResultsTitle from '../../components/events/results-title';
 import Button from '../../components/ui/button';
 import ErrorAlert from '../../components/ui/error-alert';
-import { getFilteredEvents } from '../../dummy-data';
+import { getFilteredEvents } from '../../helpers/api-util';
 
-export default function FilterEventPage(props) {
+export default function FilterEventPage({
+    events,
+    hasError,
+    date: { year, month },
+}) {
     const router = useRouter();
 
-    const filteredData = router.query.slug;
-
-    if (!filteredData) {
-        return <p className="center">Loading....</p>;
-    }
-
-    const year = +filteredData[0];
-    const month = +filteredData[1];
-
-    if (
-        isNaN(year) ||
-        isNaN(month) ||
-        year > 2030 ||
-        year < 2021 ||
-        month < 1 ||
-        month > 12
-    ) {
+    if (hasError) {
         return (
             <Fragment>
                 <ErrorAlert>
@@ -38,9 +26,7 @@ export default function FilterEventPage(props) {
         );
     }
 
-    const filteredEvents = getFilteredEvents({ year, month });
-
-    if (!filteredEvents || filteredEvents.length === 0) {
+    if (!events || events.length === 0) {
         return (
             <Fragment>
                 <ErrorAlert>
@@ -53,12 +39,53 @@ export default function FilterEventPage(props) {
         );
     }
 
-    const date = new Date(year, month - 1);
+    const NewDate = new Date(year, month - 1);
 
     return (
         <>
-            <ResultsTitle date={date} />
-            <EventsList events={filteredEvents} />
+            <ResultsTitle date={NewDate} />
+            <EventsList events={events} />
         </>
     );
+}
+
+export async function getServerSideProps(context) {
+    const filteredData = context.query.slug;
+
+    const year = +filteredData[0];
+    const month = +filteredData[1];
+
+    if (
+        isNaN(year) ||
+        isNaN(month) ||
+        year > 2030 ||
+        year < 2021 ||
+        month < 1 ||
+        month > 12
+    ) {
+        return {
+            props: {
+                hasError: true,
+            },
+        };
+    }
+
+    // first day of the month
+    const firstDay = new Date(year, month - 1, 1).toISOString();
+    // last day of the month
+    const lastDay = new Date(year, month, 0).toISOString();
+
+    const events = await getFilteredEvents(
+        `date[gte]=${firstDay}&date[lte]=${lastDay}`
+    );
+
+    return {
+        props: {
+            events,
+            date: {
+                year,
+                month,
+            },
+        },
+    };
 }

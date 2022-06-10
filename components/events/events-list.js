@@ -1,4 +1,3 @@
-import React from 'react';
 import EventItem from './event-item';
 
 export default function EventsList(props) {
@@ -6,8 +5,8 @@ export default function EventsList(props) {
         <div>
             {props.events.map((event) => (
                 <EventItem
-                    key={event.id}
-                    id={event.id}
+                    key={event._id}
+                    id={event._id}
                     title={event.title}
                     date={event.date}
                     location={event.location}
