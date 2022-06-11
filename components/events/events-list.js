@@ -1,8 +1,9 @@
 import EventItem from './event-item';
+import classes from './event-list.module.css';
 
 export default function EventsList(props) {
     return (
-        <div>
+        <ul className={classes.list}>
             {props.events.map((event) => (
                 <EventItem
                     key={event._id}
@@ -13,6 +14,6 @@ export default function EventsList(props) {
                     image={event.image}
                 />
             ))}
-        </div>
+        </ul>
     );
 }
